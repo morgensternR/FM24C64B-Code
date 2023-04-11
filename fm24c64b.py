@@ -1,3 +1,4 @@
+from machine import I2C, Pin
 #for mem_address in mem_address_list:
 #MEssage Description - Each [] = [1 byte]
 #[MSB total record 1 size in bytes][LSB total record size in bytes]
@@ -61,7 +62,7 @@ class FM24C64B:
         record_data_type = bytearray(type(data).__name__.encode('ascii'))
         record_data_type_len = bytearray([len(record_data_type)])
 
-        record_data = data.to_bytes(2, 'big')
+        record_data = data.to_bytes(2, 'big', True)
 
         record_total = record_name_len + record_name_byte_array + record_data_type_len + record_data_type + record_data
         total_size = len(record_total).to_bytes(2, 'big')
@@ -74,7 +75,8 @@ class FM24C64B:
         record_len = int.from_bytes(message[start_index:2], 'big')
         end_index = record_len + 2
         if record_len == 0:
-            raise Exception('No Record Lengths Found!')
+            print('No Record Lengths Found!')
+            pass
         while record_len != 0:
             
 
@@ -82,7 +84,9 @@ class FM24C64B:
             record_name = message[start_index + 3:start_index + 3+record_name_len]#+1 location in byte list
             record_data_type_len = int.from_bytes(message[start_index + 3+record_name_len:start_index + 3 + record_name_len+1], 'big')
             record_data_type = message[start_index + 3 + record_name_len+1:start_index + 3+record_name_len+1+record_data_type_len]#+1 location in byte list
-            record_data = int.from_bytes(message[start_index + 3+record_name_len+1+record_data_type_len:end_index], 'big')
+            record_data = int.from_bytes(message[start_index + 3+record_name_len+1+record_data_type_len:end_index], 'big', True)
+            if record_data > 0x7fff:
+                record_data -= 0x10000
             self.record_list.append(message[start_index:end_index])
             dict_collection.append(self.output_to_dict(record_len, record_name, record_data_type, record_data))
         
@@ -102,3 +106,6 @@ class FM24C64B:
         'record_data': record_data,
         }
         return output
+
+i2c = I2C(1, scl=Pin(23, Pin.PULL_UP), sda=Pin(22, Pin.PULL_UP),  freq=40000)
+mem_chip = FM24C64B(i2c) 
