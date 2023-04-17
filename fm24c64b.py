@@ -107,5 +107,5 @@ class FM24C64B:
         }
         return output
 
-i2c = I2C(1, scl=Pin(23, Pin.PULL_UP), sda=Pin(22, Pin.PULL_UP),  freq=40000)
+i2c = I2C(1, scl=Pin(23, Pin.PULL_UP), sda=Pin(22, Pin.PULL_UP),  freq=400000)
 mem_chip = FM24C64B(i2c) 
