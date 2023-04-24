@@ -41,11 +41,11 @@ class FM24C64B:
         self.mem_address += len(message)
         
     def read(self, mem_address= 0x00, num_bytes = None):
-        i2c.writeto(self.addr, bytes([mem_address>>8, mem_address&0xFF]))
+        self.i2c.writeto(self.addr, bytes([mem_address>>8, mem_address&0xFF]))
         if num_bytes == None:
-            data = i2c.readfrom(self.addr,2**13)
+            data = self.i2c.readfrom(self.addr,2**13)
         else:
-            data = i2c.readfrom(self.addr,num_bytes)
+            data = self.i2c.readfrom(self.addr,num_bytes)
         list_of_dict = self.decode(data)
         return tuple(list_of_dict)
     
@@ -106,6 +106,9 @@ class FM24C64B:
         'record_data': record_data,
         }
         return output
-
-i2c = I2C(1, scl=Pin(23, Pin.PULL_UP), sda=Pin(22, Pin.PULL_UP),  freq=400000)
-mem_chip = FM24C64B(i2c) 
+    
+    
+    
+#For testing purposes
+#i2c = I2C(1, scl=Pin(23, Pin.PULL_UP), sda=Pin(22, Pin.PULL_UP),  freq=400000)
+#mem_chip = FM24C64B(i2c) 
