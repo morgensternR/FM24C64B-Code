@@ -81,9 +81,9 @@ class FM24C64B:
             
 
             record_name_len = int.from_bytes(message[start_index+2:start_index + 3], 'big')#+1 location in byte list
-            record_name = message[start_index + 3:start_index + 3+record_name_len]#+1 location in byte list
+            record_name = message[start_index + 3:start_index + 3+record_name_len].decode('ascii')#+1 location in byte list
             record_data_type_len = int.from_bytes(message[start_index + 3+record_name_len:start_index + 3 + record_name_len+1], 'big')
-            record_data_type = message[start_index + 3 + record_name_len+1:start_index + 3+record_name_len+1+record_data_type_len]#+1 location in byte list
+            record_data_type = message[start_index + 3 + record_name_len+1:start_index + 3+record_name_len+1+record_data_type_len].decode('ascii')#+1 location in byte list
             record_data = int.from_bytes(message[start_index + 3+record_name_len+1+record_data_type_len:end_index], 'big', True)
             if record_data > 0x7fff:
                 record_data -= 0x10000
@@ -110,5 +110,5 @@ class FM24C64B:
     
     
 #For testing purposes
-#i2c = I2C(1, scl=Pin(23, Pin.PULL_UP), sda=Pin(22, Pin.PULL_UP),  freq=400000)
-#mem_chip = FM24C64B(i2c) 
+i2c = I2C(1, scl=Pin(23, Pin.PULL_UP), sda=Pin(22, Pin.PULL_UP),  freq=400000)
+mem_chip = FM24C64B(i2c) 
